@@ -29,11 +29,12 @@ const init = async () => {
         g.driverInstances[driverId] = new Driver({ driverId });
     });
     g.customerInstances = {};
-    customers.forEach(({ customerId, name }) => {
-        g.customerInstances[customerId] = new Customer({ customerId, name });
+    customers.forEach(({ customerId }) => {
+        g.customerInstances[customerId] = new Customer({ customerId });
     });
     setInterval(() => {
-        console.log(g.activeDrivers);
+        console.log(`Active drivers: ${g.activeDrivers.size}`);
+        console.log(`Active customers: ${g.activeCustomers.size}`);
     }, 10000);
 };
 g.init = init;

@@ -1,16 +1,18 @@
 import g from './global.js';
 import { wait, getRandomInt, decide } from '../../shared/utils.js';
 import config from '../../shared/config.js';
+import firstNames from '../../shared/firstNames.js';
+import lastNames from '../../shared/lastNames.js';
 const { maxActiveCustomers } = config;
 export default class Customer {
-    constructor({ customerId, name }) {
+    constructor({ customerId }) {
         this.busy = false;
         this.active = false;
         this.location = null;
         this.destination = null;
         this.driverId = null;
         this.customerId = customerId;
-        this.name = name;
+        this.name = `${firstNames[getRandomInt(0, firstNames.length - 1)]} ${lastNames[getRandomInt(0, lastNames.length - 1)]}`;
         this.deactivate = this.deactivate.bind(this);
         this.handleDestinationResult = this.handleDestinationResult.bind(this);
         this.simulate();
@@ -27,7 +29,7 @@ export default class Customer {
           '${this.destination && `${this.destination[0]}:${this.destination[1]}`}',
           ${this.driverId ? `'${this.driverId}'` : null}
         )
-        ON CONFLICT (name)
+        ON CONFLICT (customer_id)
         DO UPDATE SET 
         name = EXCLUDED.name,
         active = EXCLUDED.active,
@@ -63,6 +65,7 @@ export default class Customer {
                         newActive = decide(5);
                         if (newActive) {
                             this.active = true;
+                            this.name = `${firstNames[getRandomInt(0, firstNames.length - 1)]} ${lastNames[getRandomInt(0, lastNames.length - 1)]}`;
                             this.updateDB();
                         }
                     }

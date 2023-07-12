@@ -7,9 +7,9 @@ const main = async () => {
     getDestination.on('message', ({ customerId, destination, }) => {
         customerInstances[customerId].handleDestinationResult(destination);
     });
-    dispatcher.on('message', ({ customerId, driverId, location, }) => {
+    dispatcher.on('message', ({ customerId, driverId, customerName, location, }) => {
         customerInstances[customerId].handleDispatcherResult(driverId);
-        driverInstances[driverId].handleDispatcherResult(customerId, location);
+        driverInstances[driverId].handleDispatcherResult(customerId, customerName, location);
     });
     routePlanner.on('message', ({ driverId, path }) => {
         driverInstances[driverId].handleRoutePlannerResult(path);

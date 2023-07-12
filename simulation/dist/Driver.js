@@ -11,6 +11,7 @@ export default class Driver {
         this.status = 'idle';
         this.location = null;
         this.customerId = null;
+        this.customerName = null;
         this.customerLocation = null;
         this.path = null;
         this.pathIndex = null;
@@ -60,6 +61,8 @@ export default class Driver {
                             g.customerInstances[this.customerId].deactivate();
                             this.status = 'idle';
                             this.customerId = null;
+                            this.customerLocation = null;
+                            this.customerName = null;
                             this.path = null;
                             this.pathIndex = null;
                             this.updateDB();
@@ -75,6 +78,7 @@ export default class Driver {
             }
         };
         this.driverId = driverId;
+        this.name = `${firstNames[getRandomInt(0, firstNames.length - 1)]} ${lastNames[getRandomInt(0, lastNames.length - 1)]}`;
         this.location = g.roadNodes[getRandomInt(0, g.roadNodes.length - 1)];
         this.handleDispatcherResult = this.handleDispatcherResult.bind(this);
         this.handleRoutePlannerResult = this.handleRoutePlannerResult.bind(this);
@@ -84,7 +88,7 @@ export default class Driver {
     async updateDB() {
         try {
             g.db.query(`
-        INSERT INTO drivers (driver_id, name, status, location, path, path_index, customer_id)
+        INSERT INTO drivers (driver_id, name, status, location, path, path_index, customer_id, customer_name)
         VALUES (
           '${this.driverId}',
           '${this.name}',
@@ -92,7 +96,8 @@ export default class Driver {
           '${this.location[0]}:${this.location[1]}',
           ${this.path ? `'${JSON.stringify(this.path)}'` : null},
           ${this.pathIndex ? `'${this.pathIndex}'` : null},
-          ${this.customerId ? `'${this.customerId}'` : null}
+          ${this.customerId ? `'${this.customerId}'` : null},
+          ${this.customerName ? `'${this.customerName}'` : null}
         )
         ON CONFLICT (driver_id)
         DO UPDATE SET
@@ -101,7 +106,8 @@ export default class Driver {
         location = EXCLUDED.location,
         path = EXCLUDED.path,
         path_index = EXCLUDED.path_index,
-        customer_id = EXCLUDED.customer_id
+        customer_id = EXCLUDED.customer_id,
+        customer_name = EXCLUDED.customer_name
         `);
         }
         catch (error) {
@@ -131,8 +137,9 @@ export default class Driver {
             destination,
         });
     }
-    handleDispatcherResult(customerId, customerLocation) {
+    handleDispatcherResult(customerId, customerName, customerLocation) {
         this.customerId = customerId;
+        this.customerName = customerName;
         this.customerLocation = customerLocation;
         this.updateDB();
         this.busy = false;

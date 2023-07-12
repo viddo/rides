@@ -17,14 +17,14 @@ const main = async () => {
     while (true) {
         await wait(500);
         if (customerQueue.length && drivers.length) {
-            const { customerId, location } = customerQueue.shift();
+            const { customerId, name, location } = customerQueue.shift();
             drivers.sort((driverA, driverB) => {
                 return (getStraightLineDistance(driverB.location, location) -
                     getStraightLineDistance(driverA.location, location));
             });
             const matchedDriver = drivers.pop();
             const { driverId } = matchedDriver;
-            process.send({ customerId, driverId, location });
+            process.send({ customerId, customerName: name, driverId, location });
         }
         if (customerQueue.length)
             continue;

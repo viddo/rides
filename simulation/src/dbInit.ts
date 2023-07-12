@@ -1,5 +1,5 @@
 //@ts-ignore
-import pg, { Client } from 'pg';
+import pg from 'pg';
 import { wait } from '../../shared/utils.js';
 
 import * as dotenv from 'dotenv';
@@ -16,12 +16,12 @@ const {
 let retries = 3;
 const retryDelay = 2000;
 
-export default async function dbInit(): Promise<Client> {
+export default async function dbInit(): Promise<pg.Pool> {
   return new Promise(async (resolve, reject) => {
     const { Client } = pg;
-    const db = new Client({
+    const pool = new pg.Pool({
       host: POSTGRES_HOST,
-      port: POSTGRES_PORT,
+      port: Number(POSTGRES_PORT),
       user: POSTGRES_USER,
       password: POSTGRES_PASSWORD,
       database: POSTGRES_DBNAME,
@@ -29,9 +29,9 @@ export default async function dbInit(): Promise<Client> {
 
     while (retries > 0) {
       try {
-        await db.connect();
+        await pool.connect();
         console.log('DB connected');
-        resolve(db);
+        resolve(pool);
         return;
       } catch (err) {
         console.error(`Connection error: ${JSON.stringify(err.stack)}`);
