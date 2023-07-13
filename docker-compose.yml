@@ -9,8 +9,13 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
       - ./.env:/app/.env
+    env_file: .env
+    # environment:
+    #   SERVER_ENV: ${SERVER_ENV}
     environment:
-      SERVER_ENV: ${SERVER_ENV}
+      - SERVER_ENV=${SERVER_ENV}
+      - POSTGRES_HOST=db
+      - API_BASE_URL=
     restart: unless-stopped
     deploy:
       resources:
@@ -29,14 +34,16 @@ services:
         limits:
           cpus: '0.2'
           memory: 200M
+    env_file: .env
+    environment:
+      - POSTGRES_HOST=db
   db:
     image: postgres:15.1-alpine
     ports:
       - 5432:5432
     volumes:
       - rides-db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file: .env
     command:
       - "-c"
       - "shared_buffers=64MB"
