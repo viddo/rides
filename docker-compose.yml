@@ -44,7 +44,7 @@ services:
   db:
     image: postgres:15.1-alpine
     ports:
-      - 5432:5432
+      - 5432:${POSTGRES_PORT}
     volumes:
       - rides-db:/var/lib/postgresql/data
     env_file: .env
@@ -64,6 +64,8 @@ services:
     volumes:
       - ./db/queries:/queries
     env_file: .env
+    environment:
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     command: "psql -U ${POSTGRES_USER} -h db -p ${POSTGRES_PORT} -f /queries"
     restart: never
     depends_on:
