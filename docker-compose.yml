@@ -64,7 +64,7 @@ services:
     volumes:
       - ./db/queries:/queries
     env_file: .env
-    command: "psql -U postgres -h db -p ${POSTGRES_PORT} -f /queries"
+    command: "psql -U ${POSTGRES_USER} -h db -p ${POSTGRES_PORT} -f /queries"
     restart: never
     depends_on:
       db:
